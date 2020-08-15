@@ -10,10 +10,10 @@ local horizontal = 0
 local vertical = 0
 
 -- 摄像机看向自己
-world.CurrentCamera = player.Local.Independent.GameCamera
-local camera = world.CurrentCamera
-local mode = Camera.CameraMode
-camera.LookAt = player
+--world.CurrentCamera = player.Local.Independent.GameCamera
+local camera = world.Camera
+--local mode = Camera.CameraMode
+--camera.LookAt = player
 
 -- 手机端交互UI
 local gui = player.Local.ControlGUI
@@ -83,18 +83,18 @@ function PlayerMove(dir)
 end
 
 -- 跳跃逻辑
-function PlayerJump()
-	if (player.IsOnGround or player.State == Enum.CharacterState.Seated) and not isDead then
-		player:Jump()
-		return
-	end	
-end
-jumpButton.OnDown:Connect(PlayerJump)
-Input.OnKeyDown:Connect(function()
-	if Input.GetPressKeyData(JUMP_KEY) == 1 then
-		PlayerJump()
-	end
-end)
+-- function PlayerJump()
+-- 	if (player.IsOnGround or player.State == Enum.CharacterState.Seated) and not isDead then
+-- 		player:Jump()
+-- 		return
+-- 	end	
+-- end
+-- jumpButton.OnDown:Connect(PlayerJump)
+-- Input.OnKeyDown:Connect(function()
+-- 	if Input.GetPressKeyData(JUMP_KEY) == 1 then
+-- 		PlayerJump()
+-- 	end
+-- end)
 
 -- 死亡逻辑
 function PlayerDie()
@@ -115,7 +115,7 @@ player.OnHealthChange:Connect(HealthCheck)
 
 -- 每个渲染帧处理操控逻辑
 function MainControl()
-	camera = world.CurrentCamera
+	camera = world.Camera
 	mode = camera.CameraMode
 	GetMoveDir()
 	PlayerMove(finalDir)
@@ -126,26 +126,35 @@ world.OnRenderStepped:Connect(MainControl)
 local touchNumber = 0
 function countTouch(container)
 	touchNumber = #container
+	print(touchNumber)
 end
+-- function showTouchOffset(touchInfo)
+-- 	print(touchInfo)
+-- 	if touchInfo then
+-- 		print(type(touchInfo))
+-- 		print(touchInfo.Position)
+-- 	end
+-- end
 touchScreen.OnTouched:Connect(countTouch)
+--touchScreen.OnTouched:Connect(showTouchOffset)
 
--- 滑屏转向
-function cameraMove(pos, dis, deltapos, speed)
-	if touchNumber == 1 then
-		if IsFreeMode() then
-			camera:CameraMove(mode == Enum.CameraMode.Orbital and Vector2(deltapos.x, 0) or deltapos)
-		else 
-			player:RotateAround(player.Position, Vector3.Up, deltapos.x)
-			camera:CameraMove(Vector2(0, deltapos.y))
-		end
-	end
-end
-touchScreen.OnPanStay:Connect(cameraMove)
+-- -- 滑屏转向
+-- function cameraMove(pos, dis, deltapos, speed)
+-- 	if touchNumber == 1 then
+-- 		if IsFreeMode() then
+-- 			camera:CameraMove(mode == Enum.CameraMode.Orbital and Vector2(deltapos.x, 0) or deltapos)
+-- 		else 
+-- 			player:RotateAround(player.Position, Vector3.Up, deltapos.x)
+-- 			camera:CameraMove(Vector2(0, deltapos.y))
+-- 		end
+-- 	end
+-- end
+-- touchScreen.OnPanStay:Connect(cameraMove)
 
--- 双指缩放摄像机距离
-function cameraZoom(pos1, pos2, dis, speed)
-	if mode == Enum.CameraMode.Social then
-		camera.Distance = camera.Distance - dis / 50
-	end
-end
-touchScreen.OnPinchStay:Connect(cameraZoom)
+-- -- 双指缩放摄像机距离
+-- function cameraZoom(pos1, pos2, dis, speed)
+-- 	if mode == Enum.CameraMode.Social then
+-- 		camera.Distance = camera.Distance - dis / 50
+-- 	end
+-- end
+-- touchScreen.OnPinchStay:Connect(cameraZoom)
